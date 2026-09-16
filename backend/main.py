@@ -36,19 +36,35 @@ logging.basicConfig(
 )
 logger = logging.getLogger("calmie")
 
+IS_SERVERLESS = bool(
+    os.getenv("VERCEL")
+    or os.getenv("VERCEL_ENV")
+    or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+    or os.getenv("LAMBDA_TASK_ROOT")
+    or os.getenv("AWS_EXECUTION_ENV")
+)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.APP_NAME} in {settings.ENV} mode...")
-    start_scheduler()
+    if not IS_SERVERLESS:
+        try:
+            start_scheduler()
+        except Exception as e:
+            logger.warning(f"Scheduler skipped: {e}")
     yield
-    stop_scheduler()
+    if not IS_SERVERLESS:
+        try:
+            stop_scheduler()
+        except Exception:
+            pass
     logger.info(f"Shutting down {settings.APP_NAME}...")
 
 app = FastAPI(
     title=settings.APP_NAME,
     description="Calmie Voice AI & Senior Check-in Platform Backend",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan if not IS_SERVERLESS else None
 )
 
 # Enable CORS for frontend development and production
@@ -68,6 +84,7 @@ app.include_router(calls_router)
 app.include_router(twiml_router)
 
 @app.get("/")
+@app.get("/api")
 async def root():
     return {
         "app": settings.APP_NAME,
@@ -78,10 +95,12 @@ async def root():
     }
 
 @app.get("/health")
+@app.get("/api/health")
 async def health_check():
     return {
         "status": "healthy",
         "supabase": bool(settings.SUPABASE_URL and settings.SUPABASE_ANON_KEY),
         "twilio": bool(settings.TWILIO_ACCOUNT_SID and settings.TWILIO_PHONE_NUMBER),
-        "target_verified_phone": settings.TWILIO_VERIFIED_CALLER_ID
+        "anthropic": bool(settings.ANTHROPIC_API_KEY),
+        "elevenlabs": bool(settings.ELEVENLABS_API_KEY)
     }
