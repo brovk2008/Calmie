@@ -2,7 +2,10 @@ import json
 import logging
 from typing import Dict, Any, Optional
 import httpx
-from ..config import settings
+try:
+    from ..config import settings
+except (ImportError, ValueError):
+    from config import settings
 
 logger = logging.getLogger("calmie.claude")
 

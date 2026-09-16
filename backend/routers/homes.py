@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from typing import List, Dict, Any
-from ..supabase_client import supabase_db
+try:
+    from ..supabase_client import supabase_db
+except (ImportError, ValueError):
+    from supabase_client import supabase_db
 
 router = APIRouter(prefix="/api/homes", tags=["Homes"])
 

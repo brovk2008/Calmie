@@ -1,7 +1,10 @@
 import logging
 from typing import Any, Dict, List, Optional
 import httpx
-from .config import settings
+try:
+    from .config import settings
+except (ImportError, ValueError):
+    from config import settings
 
 logger = logging.getLogger("calmie.supabase")
 

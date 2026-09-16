@@ -3,10 +3,16 @@ import datetime
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
-from ..supabase_client import supabase_db
-from ..services.twilio_service import twilio_service
-from ..services.claude_service import claude_service
-from ..services.vakh_service import vakh_service
+try:
+    from ..supabase_client import supabase_db
+    from ..services.twilio_service import twilio_service
+    from ..services.claude_service import claude_service
+    from ..services.vakh_service import vakh_service
+except (ImportError, ValueError):
+    from supabase_client import supabase_db
+    from services.twilio_service import twilio_service
+    from services.claude_service import claude_service
+    from services.vakh_service import vakh_service
 
 router = APIRouter(prefix="/api/calls", tags=["Calls"])
 

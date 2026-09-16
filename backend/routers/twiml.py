@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Request, Response
-from ..supabase_client import supabase_db
-from ..prompt_builder import build_first_sentence
-from ..config import settings
+try:
+    from ..supabase_client import supabase_db
+    from ..prompt_builder import build_first_sentence
+    from ..config import settings
+except (ImportError, ValueError):
+    from supabase_client import supabase_db
+    from prompt_builder import build_first_sentence
+    from config import settings
 import logging
 import httpx
 

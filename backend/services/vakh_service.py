@@ -1,7 +1,10 @@
 import logging
 import uuid
 from typing import Dict, Any, Optional
-from ..config import settings
+try:
+    from ..config import settings
+except (ImportError, ValueError):
+    from config import settings
 
 logger = logging.getLogger("calmie.vakh")
 

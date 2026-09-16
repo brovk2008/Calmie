@@ -2,8 +2,12 @@ import logging
 import datetime
 import uuid
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from ..supabase_client import supabase_db
-from .twilio_service import twilio_service
+try:
+    from ..supabase_client import supabase_db
+    from .twilio_service import twilio_service
+except (ImportError, ValueError):
+    from supabase_client import supabase_db
+    from services.twilio_service import twilio_service
 
 logger = logging.getLogger("calmie.scheduler")
 

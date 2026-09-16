@@ -1,8 +1,12 @@
 import logging
 from typing import Dict, Any, Optional
 from twilio.rest import Client
-from ..config import settings
-from ..prompt_builder import build_first_sentence, build_system_prompt
+try:
+    from ..config import settings
+    from ..prompt_builder import build_first_sentence, build_system_prompt
+except (ImportError, ValueError):
+    from config import settings
+    from prompt_builder import build_first_sentence, build_system_prompt
 
 logger = logging.getLogger("calmie.twilio")
 

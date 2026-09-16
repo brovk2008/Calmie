@@ -1,14 +1,34 @@
+import os
+import sys
 import logging
+from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .config import settings
-from .routers.homes import router as homes_router
-from .routers.residents import router as residents_router
-from .routers.bookings import router as bookings_router
-from .routers.calls import router as calls_router
-from .routers.twiml import router as twiml_router
-from .services.scheduler import start_scheduler, stop_scheduler
+
+# Add backend directory and parent directory to sys.path for standalone serverless runtimes
+backend_dir = Path(__file__).resolve().parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+if str(backend_dir.parent) not in sys.path:
+    sys.path.insert(0, str(backend_dir.parent))
+
+try:
+    from .config import settings
+    from .routers.homes import router as homes_router
+    from .routers.residents import router as residents_router
+    from .routers.bookings import router as bookings_router
+    from .routers.calls import router as calls_router
+    from .routers.twiml import router as twiml_router
+    from .services.scheduler import start_scheduler, stop_scheduler
+except (ImportError, ValueError):
+    from config import settings
+    from routers.homes import router as homes_router
+    from routers.residents import router as residents_router
+    from routers.bookings import router as bookings_router
+    from routers.calls import router as calls_router
+    from routers.twiml import router as twiml_router
+    from services.scheduler import start_scheduler, stop_scheduler
 
 logging.basicConfig(
     level=logging.INFO,
