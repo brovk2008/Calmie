@@ -15,7 +15,7 @@ export default function NewResidentPage() {
     age: 78,
     room_number: "",
     phone: "9821400274",
-    photo_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80",
+    photo_url: "/residents/ramesh.jpg",
     hometown: "",
     family_notes: "",
     hobbies: "",

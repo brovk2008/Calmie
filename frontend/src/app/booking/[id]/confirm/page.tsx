@@ -64,7 +64,7 @@ export default function BookingConfirmPage({ params }: { params: { id: string } 
             id: "95c6eaba-fda4-44c0-8d8e-d13d9211808e",
             name: "Ramesh Tiwari",
             room_number: "104",
-            photo_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80",
+            photo_url: "/residents/ramesh.jpg",
             hometown: "Allahabad, UP",
             preferred_lang: "Hindi with English words",
             favorite_topics: "1983 World Cup, Indian Railways"

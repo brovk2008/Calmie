@@ -204,6 +204,19 @@ class SupabaseService:
                 return b
         return None
 
+    async def get_bookings(self, limit: int = 50) -> List[Dict[str, Any]]:
+        try:
+            url = f"{self.url}/rest/v1/bookings?select=*&order=created_at.desc&limit={limit}"
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(url, headers=self.headers)
+                if res.status_code == 200:
+                    data = res.json()
+                    if data:
+                        return data
+        except Exception as e:
+            logger.warning(f"Supabase get_bookings failed: {e}")
+        return list(self.local_bookings)
+
     async def create_or_update_call(self, call_data: Dict[str, Any]) -> Dict[str, Any]:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:

@@ -147,7 +147,7 @@ export default function ResidentsPage() {
             {/* Image Banner */}
             <div className="relative h-60 w-full border-b-2 border-black">
               <Image
-                src={r.photo_url || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80"}
+                src={r.photo_url || "/residents/ramesh.jpg"}
                 alt={r.name}
                 fill
                 className="object-cover"

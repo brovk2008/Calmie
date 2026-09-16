@@ -31,7 +31,7 @@ const FALLBACK_CALLS: CallItem[] = [
     resident: {
       name: "Ramesh Tiwari",
       room_number: "104",
-      photo_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80",
+      photo_url: "/residents/ramesh.jpg",
       preferred_lang: "Hindi/English"
     },
     started_at: "Just now",
@@ -48,7 +48,7 @@ const FALLBACK_CALLS: CallItem[] = [
     resident: {
       name: "Kamla Devi",
       room_number: "108",
-      photo_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&auto=format&fit=crop&q=80",
+      photo_url: "/residents/kamla.jpg",
       preferred_lang: "Hindi"
     },
     started_at: "2 hours ago",
@@ -65,7 +65,7 @@ const FALLBACK_CALLS: CallItem[] = [
     resident: {
       name: "Col. (Retd.) Harbhajan Singh",
       room_number: "201",
-      photo_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+      photo_url: "/residents/harbhajan.jpg",
       preferred_lang: "English/Punjabi"
     },
     started_at: "Yesterday",
@@ -200,7 +200,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-4">
                     <div className="relative w-14 h-14 border-2 border-black overflow-hidden flex-shrink-0">
                       <Image
-                        src={resident.photo_url || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80"}
+                        src={resident.photo_url || "/residents/ramesh.jpg"}
                         alt={resident.name}
                         fill
                         className="object-cover"
