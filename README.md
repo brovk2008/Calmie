@@ -11,6 +11,7 @@
 
 <p align="center">
   <a href="#license"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="Apache 2.0 License"></a>
+  <a href="https://calmie-lol.vercel.app"><img src="https://img.shields.io/badge/Live_Deployment-calmie--lol.vercel.app-22C55E?style=flat&logo=vercel&logoColor=white" alt="Live Deployment"></a>
   <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-14.2-black?logo=next.js" alt="Next.js"></a>
   <a href="https://fastapi.tiangolo.com"><img src="https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi" alt="FastAPI"></a>
   <a href="https://www.python.org"><img src="https://img.shields.io/badge/Python-3.11-3776AB?logo=python" alt="Python 3.11"></a>
@@ -18,8 +19,33 @@
   <a href="https://supabase.com"><img src="https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase" alt="Supabase"></a>
   <a href="https://www.anthropic.com"><img src="https://img.shields.io/badge/Anthropic-Claude_3_Haiku-D97706?logo=anthropic" alt="Claude"></a>
   <a href="https://elevenlabs.io"><img src="https://img.shields.io/badge/ElevenLabs-Multilingual_TTS-000000" alt="ElevenLabs"></a>
-  <a href="https://vercel.com"><img src="https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel" alt="Vercel"></a>
+  <a href="https://calmie-lol.vercel.app"><img src="https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel" alt="Vercel"></a>
 </p>
+
+<p align="center">
+  <a href="https://calmie-lol.vercel.app" target="_blank">
+    <img src="https://img.shields.io/badge/🚀_VISIT_LIVE_APP-calmie--lol.vercel.app-22C55E?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+  </a>
+</p>
+
+<p align="center">
+  🌐 <strong>Live Production URL:</strong> <a href="https://calmie-lol.vercel.app" target="_blank"><strong>https://calmie-lol.vercel.app</strong></a>
+</p>
+
+---
+
+## 🌐 Live Deployment
+
+<p align="center">
+  <img src="./Logo.png" alt="Calmie Logo" width="100" />
+</p>
+
+Calmie is deployed on Vercel with automated full-stack routing:
+
+- 🚀 **Live Web Application:** [**https://calmie-lol.vercel.app**](https://calmie-lol.vercel.app)
+- ⚡ **Backend API Endpoints:** [**https://calmie-lol.vercel.app/api**](https://calmie-lol.vercel.app/api)
+- 📖 **Interactive API Documentation (Swagger):** [**https://calmie-lol.vercel.app/api/docs**](https://calmie-lol.vercel.app/api/docs)
+- 🩺 **Health Check:** [**https://calmie-lol.vercel.app/api/health**](https://calmie-lol.vercel.app/api/health)
 
 ---
 
@@ -531,6 +557,8 @@ Copy the generated ngrok URL (e.g., `https://abc-123.ngrok-free.app`) and update
 </p>
 
 Calmie is engineered as a zero-config serverless monorepo on Vercel.
+
+> 🌐 **Production Deployment Live at:** [**https://calmie-lol.vercel.app**](https://calmie-lol.vercel.app)
 
 1. **Push to GitHub**:
    ```bash
