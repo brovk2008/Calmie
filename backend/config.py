@@ -11,7 +11,8 @@ class Settings:
     # App
     APP_NAME: str = "Calmie API"
     ENV: str = os.getenv("ENV", "development")
-    PORT: int = int(os.getenv("PORT", 8000))
+    raw_port = os.getenv("PORT", "")
+    PORT: int = int(raw_port) if raw_port and raw_port.isdigit() else 8000
 
     # Auto-detect production BASE_URL from Vercel's injected VERCEL_URL env var
     # VERCEL_URL is automatically set on all deployments (no https:// prefix)
