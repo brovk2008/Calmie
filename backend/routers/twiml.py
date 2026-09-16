@@ -141,3 +141,12 @@ async def twiml_status(request: Request, call_id: str = ""):
     call_sid = form_data.get("CallSid", "")
     logger.info(f"Twilio Call Status: {call_status} (SID: {call_sid}, ID: {call_id})")
     return {"received": True, "status": call_status}
+
+@router.get("/tts")
+async def stream_tts(text: str, voice_id: str = "aria"):
+    from ..services.elevenlabs_service import elevenlabs_service
+    audio = await elevenlabs_service.generate_speech(text=text, voice_id=voice_id)
+    if audio:
+        return Response(content=audio, media_type="audio/mpeg")
+    return Response(content=b"", status_code=404)
+
