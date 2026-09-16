@@ -88,29 +88,36 @@ async def twiml_gather(request: Request, resident_id: str = "", turn: int = 1, g
     # Conversational turn: generate dynamic response
     if settings.ANTHROPIC_API_KEY:
         try:
+            models_to_try = [
+                "claude-haiku-4-5-20251001",
+                "claude-3-5-haiku-20241022",
+                "claude-3-haiku-20240307"
+            ]
             async with httpx.AsyncClient(timeout=8.0) as client:
-                res = await client.post(
-                    "https://api.anthropic.com/v1/messages",
-                    headers={
-                        "x-api-key": settings.ANTHROPIC_API_KEY,
-                        "anthropic-version": "2023-06-01",
-                        "content-type": "application/json"
-                    },
-                    json={
-                        "model": "claude-3-haiku-20240307",
-                        "max_tokens": 120,
-                        "system": (
-                            f"You are Calmie, a loving {'grandson' if gender == 'male' else 'granddaughter'} calling {name} in an old age home. "
-                            f"They like: {resident.get('favorite_topics')}. Avoid: {resident.get('avoid_topics')}. "
-                            "Reply warmly in simple Hindi/English mix in 1-2 short sentences. Validate their feelings, cure their loneliness."
-                        ),
-                        "messages": [{"role": "user", "content": speech_result or "Acha lag raha hai"}]
-                    }
-                )
-                if res.status_code == 200:
-                    reply = res.json()["content"][0]["text"].strip()
-                else:
-                    reply = f"Wah {name} ji! Yeh sunkar bahut sukoon mila. Aur bataiye, aage kya plan hai aaj ka?"
+                for model_name in models_to_try:
+                    res = await client.post(
+                        "https://api.anthropic.com/v1/messages",
+                        headers={
+                            "x-api-key": settings.ANTHROPIC_API_KEY,
+                            "anthropic-version": "2023-06-01",
+                            "content-type": "application/json"
+                        },
+                        json={
+                            "model": model_name,
+                            "max_tokens": 120,
+                            "system": (
+                                f"You are Calmie, a loving {'grandson' if gender == 'male' else 'granddaughter'} calling {name} in an old age home. "
+                                f"They like: {resident.get('favorite_topics')}. Avoid: {resident.get('avoid_topics')}. "
+                                "Reply warmly in simple Hindi/English mix in 1-2 short sentences. Validate their feelings, cure their loneliness."
+                            ),
+                            "messages": [{"role": "user", "content": speech_result or "Acha lag raha hai"}]
+                        }
+                    )
+                    if res.status_code == 200:
+                        reply = res.json()["content"][0]["text"].strip()
+                        break
+            if not reply:
+                reply = f"Wah {name} ji! Yeh sunkar bahut sukoon mila. Aur bataiye, aage kya plan hai aaj ka?"
         except Exception:
             reply = f"Wah {name} ji! Yeh sunkar bahut sukoon mila. Aur bataiye, aage kya plan hai aaj ka?"
     else:

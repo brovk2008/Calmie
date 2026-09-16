@@ -51,6 +51,7 @@ Calmie is deployed on Vercel with automated full-stack routing:
 
 ## 📖 Table of Contents
 
+- [🌐 Live Deployment](#-live-deployment)
 - [The Mission](#-the-mission)
 - [System Architecture](#-system-architecture)
 - [Complete Tech Stack](#-complete-tech-stack)
@@ -170,7 +171,7 @@ flowchart TD
 </p>
 
 ### 1. Twilio Programmable Voice · PSTN Telephony
-- **File Implementation**: [`backend/services/twilio_service.py`](file:///c:/Users/techp/Downloads/more%20projects/BuildSprint/backend/services/twilio_service.py) & [`backend/routers/twiml.py`](file:///c:/Users/techp/Downloads/more%20projects/BuildSprint/backend/routers/twiml.py)
+- **File Implementation**: [`backend/services/twilio_service.py`](./backend/services/twilio_service.py) & [`backend/routers/twiml.py`](./backend/routers/twiml.py)
 - **Role**: Bridges the digital cloud infrastructure to the Public Switched Telephone Network (PSTN), dialing mobile numbers in India (`+91`) without requiring the elder to possess a smartphone or internet.
 - **How It's Used**:
   - **Outbound Calling**: Uses Twilio REST Client `client.calls.create()` specifying the senior's phone number, verified caller ID, and the initial webhook URL (`/api/twiml/welcome`).
@@ -182,7 +183,7 @@ flowchart TD
   - **Status Callbacks**: Twilio notifies `/api/calls/{call_id}/complete` with call duration, recording metadata, and termination reason.
 
 ### 2. Supabase · Relational Database & State Management
-- **File Implementation**: [`backend/supabase_client.py`](file:///c:/Users/techp/Downloads/more%20projects/BuildSprint/backend/supabase_client.py)
+- **File Implementation**: [`backend/supabase_client.py`](./backend/supabase_client.py)
 - **Role**: Secure, persistent PostgreSQL storage for residents, elder care homes, bookings, call logs, and mood trajectories.
 - **How It's Used**:
   - **Direct Async REST Client**: Built using `httpx.AsyncClient` with bearer token auth to query Supabase PostgREST endpoints (`/rest/v1/*`), ensuring zero blocking operations in serverless execution.
@@ -190,10 +191,10 @@ flowchart TD
   - **Automated Schema**: Tracks primary keys, foreign relations, JSON tags (diet, hobbies, medical alerts), and call transcripts.
 
 ### 3. Anthropic Claude · Conversational & Clinical AI
-- **File Implementation**: [`backend/services/ai_companion.py`](file:///c:/Users/techp/Downloads/more%20projects/BuildSprint/backend/services/ai_companion.py)
+- **File Implementation**: [`backend/services/claude_service.py`](./backend/services/claude_service.py)
 - **Role**: Provides the brain of Calmie, delivering human-level conversational warmth and post-call clinical intelligence.
 - **How It's Used**:
-  - **Interactive Dialogue (`Claude 3 Haiku`)**:
+  - **Interactive Dialogue (`Claude 3 Haiku / Claude Haiku 4.5`)**:
     - System prompt injects the elder's name, age, home city, favorite memories, health constraints, and language preference.
     - Instructed to speak in warm, respectful tones (using respectful Indian honorifics like *Ji*, *Aadab*, *Sat Sri Akal*).
     - Keeps turns brief (1-3 sentences) optimized for natural phone listening without overwhelming the senior.
@@ -206,7 +207,7 @@ flowchart TD
       - `favorite_moment` (highlighted memory or joke shared during the call)
 
 ### 4. ElevenLabs · Neural Multilingual TTS
-- **File Implementation**: [`backend/services/elevenlabs_service.py`](file:///c:/Users/techp/Downloads/more%20projects/BuildSprint/backend/services/elevenlabs_service.py)
+- **File Implementation**: [`backend/services/elevenlabs_service.py`](./backend/services/elevenlabs_service.py)
 - **Role**: High-definition, emotionally expressive speech generation with natural human pauses and warmth.
 - **How It's Used**:
   - Leverages the `eleven_multilingual_v2` model with tailored voice profiles (`Aria`, `Rachel`, `Priya`, `Lily`, `Brian`, `George`).
@@ -214,14 +215,14 @@ flowchart TD
   - Injected directly into Twilio TwiML via `<Play>/api/twiml/tts?text=...</Play>`.
 
 ### 5. Amazon Polly · Low-Latency TwiML Voice
-- **File Implementation**: [`backend/routers/twiml.py`](file:///c:/Users/techp/Downloads/more%20projects/BuildSprint/backend/routers/twiml.py)
+- **File Implementation**: [`backend/routers/twiml.py`](./backend/routers/twiml.py)
 - **Role**: Twilio-native ultra-fast neural speech synthesis.
 - **How It's Used**:
   - Serves as the high-speed primary or fallback voice synthesizer embedded inside TwiML `<Say>` tags.
   - Utilizes `Polly.Aditi` (Indian Hindi female) for Hindi conversations and `Polly.Matthew` (Indian English male) for English calls, providing natural Indian accents with zero additional latency.
 
 ### 6. Vakh · Community Social Feed
-- **File Implementation**: [`backend/services/vakh_service.py`](file:///c:/Users/techp/Downloads/more%20projects/BuildSprint/backend/services/vakh_service.py)
+- **File Implementation**: [`backend/services/vakh_service.py`](./backend/services/vakh_service.py)
 - **Role**: Shared community and family bulletin feed connecting old age home residents with sponsors, volunteers, and dispersed families.
 - **How It's Used**:
   - Connected via Vakh REST/MCP endpoint (`https://xo.vakh.com/mcp`).
@@ -230,7 +231,7 @@ flowchart TD
   - Keeps families connected across continents and reassures them that their loved ones are happy and engaged.
 
 ### 7. Vercel · Serverless Monorepo Platform
-- **File Implementation**: [`vercel.json`](file:///c:/Users/techp/Downloads/more%20projects/BuildSprint/vercel.json)
+- **File Implementation**: [`vercel.json`](./vercel.json)
 - **Role**: Unified deployment platform hosting both the Next.js frontend and Python FastAPI backend on high-performance edge infrastructure.
 - **How It's Used**:
   - Next.js built via `@vercel/next`.

@@ -41,23 +41,31 @@ class ClaudeAnalysisService:
                 )
                 user_content = f"Senior: {resident_name}\nHealth Notes: {resident.get('health_notes', 'None')}\nTranscript:\n{transcript_text}"
                 
+                # Try modern Claude Haiku models in order
+                models_to_try = [
+                    "claude-haiku-4-5-20251001",
+                    "claude-3-5-haiku-20241022",
+                    "claude-3-haiku-20240307"
+                ]
                 async with httpx.AsyncClient(timeout=15.0) as client:
-                    resp = await client.post(
-                        "https://api.anthropic.com/v1/messages",
-                        headers={
-                            "x-api-key": self.api_key,
-                            "anthropic-version": "2023-06-01",
-                            "content-type": "application/json"
-                        },
-                        json={
-                            "model": "claude-3-haiku-20240307",
-                            "max_tokens": 512,
-                            "system": system_prompt,
-                            "messages": [{"role": "user", "content": user_content}]
-                        }
-                    )
-                    if resp.status_code == 200:
-                        content = resp.json()["content"][0]["text"]
+                    for model_name in models_to_try:
+                        resp = await client.post(
+                            "https://api.anthropic.com/v1/messages",
+                            headers={
+                                "x-api-key": self.api_key,
+                                "anthropic-version": "2023-06-01",
+                                "content-type": "application/json"
+                            },
+                            json={
+                                "model": model_name,
+                                "max_tokens": 512,
+                                "system": system_prompt,
+                                "messages": [{"role": "user", "content": user_content}]
+                            }
+                        )
+                        if resp.status_code == 200:
+                            content = resp.json()["content"][0]["text"]
+                            break
                         # Clean JSON
                         if "```json" in content:
                             content = content.split("```json")[1].split("```")[0].strip()
