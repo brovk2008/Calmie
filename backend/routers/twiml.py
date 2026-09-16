@@ -86,6 +86,7 @@ async def twiml_gather(request: Request, resident_id: str = "", turn: int = 1, g
         return Response(content=xml_content, media_type="application/xml")
 
     # Conversational turn: generate dynamic response
+    reply = ""
     if settings.ANTHROPIC_API_KEY:
         try:
             models_to_try = [

@@ -17,10 +17,12 @@ class Settings:
     # VERCEL_URL is automatically set on all deployments (no https:// prefix)
     @property
     def BASE_URL(self) -> str:
-        vercel_url = os.getenv("VERCEL_URL", "")
+        custom_url = os.getenv("BASE_URL", "").strip().rstrip("/")
+        if custom_url and not custom_url.startswith("http://localhost"):
+            return custom_url
+        vercel_url = os.getenv("VERCEL_URL", "").strip()
         if vercel_url:
             return f"https://{vercel_url}"
-        custom_url = os.getenv("BASE_URL", "")
         if custom_url:
             return custom_url
         return "http://localhost:8000"
