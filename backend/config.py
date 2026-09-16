@@ -12,7 +12,18 @@ class Settings:
     APP_NAME: str = "Calmie API"
     ENV: str = os.getenv("ENV", "development")
     PORT: int = int(os.getenv("PORT", 8000))
-    BASE_URL: str = os.getenv("BASE_URL", "http://localhost:8000")
+
+    # Auto-detect production BASE_URL from Vercel's injected VERCEL_URL env var
+    # VERCEL_URL is automatically set on all deployments (no https:// prefix)
+    @property
+    def BASE_URL(self) -> str:
+        vercel_url = os.getenv("VERCEL_URL", "")
+        if vercel_url:
+            return f"https://{vercel_url}"
+        custom_url = os.getenv("BASE_URL", "")
+        if custom_url:
+            return custom_url
+        return "http://localhost:8000"
 
     # Supabase
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://ltqiosnhrxdxxltbkxkm.supabase.co")

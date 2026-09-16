@@ -1,2 +1,7 @@
 [tool.fastapi]
 entrypoint = "main:app"
+
+[project]
+name = "calmie-backend"
+version = "1.0.0"
+requires-python = ">=3.11"

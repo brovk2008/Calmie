@@ -152,7 +152,7 @@ async def list_calls(limit: int = Query(50)):
     # Calculate dashboard metrics
     total_calls = len(enriched_calls)
     avg_mood = (
-        round(sum(c.get("mood_score") or 4 for c in enriched_calls) / total_calls, 1)
+        round(sum(c.get("mood_score") if c.get("mood_score") is not None else 4 for c in enriched_calls) / total_calls, 1)
         if total_calls > 0
         else 4.5
     )

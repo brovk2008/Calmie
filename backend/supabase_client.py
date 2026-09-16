@@ -244,7 +244,11 @@ class SupabaseService:
                             json=call_data
                         )
                         if patch_res.status_code == 200:
-                            return patch_res.json()[0]
+                            patch_data = patch_res.json()
+                            if patch_data:
+                                return patch_data[0]
+                            # Empty response means success but no data returned, return call_data
+                            return call_data
 
                 res = await client.post(f"{self.url}/rest/v1/calls", headers=self.headers, json=call_data)
                 if res.status_code in (200, 201):

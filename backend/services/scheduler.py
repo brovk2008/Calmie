@@ -1,7 +1,7 @@
 import logging
 import datetime
 import uuid
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import os
 try:
     from ..supabase_client import supabase_db
     from .twilio_service import twilio_service
@@ -11,7 +11,14 @@ except (ImportError, ValueError):
 
 logger = logging.getLogger("calmie.scheduler")
 
-scheduler = AsyncIOScheduler()
+# APScheduler requires a persistent process — only run locally, not on Vercel serverless
+IS_SERVERLESS = os.getenv("VERCEL", "") != "" or os.getenv("AWS_LAMBDA_FUNCTION_NAME", "") != ""
+
+try:
+    from apscheduler.schedulers.asyncio import AsyncIOScheduler
+    scheduler = AsyncIOScheduler() if not IS_SERVERLESS else None
+except ImportError:
+    scheduler = None
 
 async def check_scheduled_calls():
     """
@@ -63,12 +70,17 @@ async def check_scheduled_calls():
         logger.error(f"Scheduler check failed: {e}")
 
 def start_scheduler():
+    if scheduler is None:
+        logger.info("Scheduler disabled in serverless environment (Vercel/Lambda). Skipping.")
+        return
     if not scheduler.running:
         scheduler.add_job(check_scheduled_calls, "interval", seconds=60, id="check_scheduled_calls")
         scheduler.start()
         logger.info("Calmie call scheduler started.")
 
 def stop_scheduler():
+    if scheduler is None:
+        return
     if scheduler.running:
         scheduler.shutdown()
         logger.info("Calmie call scheduler stopped.")

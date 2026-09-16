@@ -3,10 +3,12 @@ try:
     from ..supabase_client import supabase_db
     from ..prompt_builder import build_first_sentence
     from ..config import settings
+    from ..services.elevenlabs_service import elevenlabs_service
 except (ImportError, ValueError):
     from supabase_client import supabase_db
     from prompt_builder import build_first_sentence
     from config import settings
+    from services.elevenlabs_service import elevenlabs_service
 import logging
 import httpx
 
@@ -149,7 +151,6 @@ async def twiml_status(request: Request, call_id: str = ""):
 
 @router.get("/tts")
 async def stream_tts(text: str, voice_id: str = "aria"):
-    from ..services.elevenlabs_service import elevenlabs_service
     audio = await elevenlabs_service.generate_speech(text=text, voice_id=voice_id)
     if audio:
         return Response(content=audio, media_type="audio/mpeg")
