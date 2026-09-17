@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -28,8 +28,8 @@ interface Booking {
   };
 }
 
-export default function BookingConfirmPage({ params }: { params: { id: string } }) {
-  const bookingId = params.id;
+export default function BookingConfirmPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: bookingId } = use(params);
   const searchParams = useSearchParams();
 
   const [booking, setBooking] = useState<Booking | null>(null);
