@@ -6,8 +6,10 @@ import { API_BASE_URL } from "@/lib/api";
 
 async function getResident(id: string) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/residents/${id}`, { cache: "no-store" });
-    if (res.ok) return await res.json();
+    if (API_BASE_URL && !API_BASE_URL.includes("localhost")) {
+      const res = await fetch(`${API_BASE_URL}/api/residents/${id}`);
+      if (res.ok) return await res.json();
+    }
   } catch (e) {
     console.warn("Backend fetch failed, using fallback:", e);
   }

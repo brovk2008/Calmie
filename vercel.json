@@ -16,6 +16,10 @@
       "dest": "/api/index.py"
     },
     {
+      "src": "/booking/(.*)/confirm",
+      "dest": "/frontend/booking/demo/confirm"
+    },
+    {
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }

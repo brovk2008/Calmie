@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -28,9 +28,23 @@ interface Booking {
   };
 }
 
-export default function BookingConfirmPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id: bookingId } = use(params);
+export default function ConfirmClient({ bookingId: initialBookingId }: { bookingId?: string }) {
   const searchParams = useSearchParams();
+  const [bookingId, setBookingId] = useState<string>(initialBookingId || "demo");
+
+  useEffect(() => {
+    if (initialBookingId && initialBookingId !== "demo") {
+      setBookingId(initialBookingId);
+    } else if (typeof window !== "undefined") {
+      const parts = window.location.pathname.split("/");
+      const bookingIdx = parts.indexOf("booking");
+      if (bookingIdx !== -1 && parts[bookingIdx + 1] && parts[bookingIdx + 1] !== "confirm") {
+        setBookingId(parts[bookingIdx + 1]);
+      } else if (searchParams.get("id")) {
+        setBookingId(searchParams.get("id")!);
+      }
+    }
+  }, [initialBookingId, searchParams]);
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [callStatus, setCallStatus] = useState<"idle" | "ringing" | "connected" | "analyzing" | "completed">("idle");

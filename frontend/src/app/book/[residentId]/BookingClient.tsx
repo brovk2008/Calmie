@@ -118,9 +118,21 @@ const SUGGESTED_CHIPS = [
   "Take your evening tea peacefully in the garden lawn"
 ];
 
-export default function BookingPage({ params }: { params: { residentId: string } }) {
+export default function BookingClient({ residentId: initialResidentId }: { residentId?: string }) {
   const router = useRouter();
-  const residentId = params.residentId;
+  const [residentId, setResidentId] = useState<string>(initialResidentId || "95c6eaba-fda4-44c0-8d8e-d13d9211808e");
+
+  useEffect(() => {
+    if (initialResidentId) {
+      setResidentId(initialResidentId);
+    } else if (typeof window !== "undefined") {
+      const parts = window.location.pathname.split("/");
+      const bookIdx = parts.indexOf("book");
+      if (bookIdx !== -1 && parts[bookIdx + 1]) {
+        setResidentId(parts[bookIdx + 1]);
+      }
+    }
+  }, [initialResidentId]);
 
   const [resident, setResident] = useState<Resident | null>(null);
   const [loading, setLoading] = useState(false);
@@ -129,7 +141,7 @@ export default function BookingPage({ params }: { params: { residentId: string }
   const [bookerName, setBookerName] = useState("");
   const [bookerPhone, setBookerPhone] = useState("");
   const [bookerEmail, setBookerEmail] = useState("");
-  const [selectedDay, setSelectedDay] = useState("Today / Immediate Demo");
+  const [selectedDay, setSelectedDay] = useState("Today / Immediate Demo Mode");
   const [selectedTime, setSelectedTime] = useState("Morning (10:00 AM – 11:30 AM)");
   const [customNote, setCustomNote] = useState("");
 
