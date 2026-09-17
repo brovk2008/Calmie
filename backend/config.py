@@ -42,7 +42,7 @@ class Settings:
     TWILIO_VERIFIED_CALLER_ID: str = os.getenv("TWILIO_VERIFIED_CALLER_ID", "")
 
     # ElevenLabs (Creator Tier Voice)
-    ELEVENLABS_API_KEY: str = os.getenv("ELEVENLABS_API_KEY", "")
+    ELEVENLABS_API_KEY: str = os.getenv("ELEVENLABS_API_KEY", "sk_db375de384ece60f214056dd93a2532e30d0831e7b5d0ada")
     ELEVENLABS_VOICE_ID: str = os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")
     ELEVENLABS_AGENT_ID: str = os.getenv("ELEVENLABS_AGENT_ID", "")
 

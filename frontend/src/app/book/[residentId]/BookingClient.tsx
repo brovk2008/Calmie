@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Phone, Calendar, Clock, Volume2, BookOpen, Heart, Check } from "lucide-react";
+import { ArrowLeft, Phone, Calendar, Clock, Volume2, VolumeX, BookOpen, Heart, Check, Sparkles } from "lucide-react";
 import { API_BASE_URL } from "@/lib/api";
 
 interface Resident {
@@ -149,7 +149,17 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
   const [voiceGender, setVoiceGender] = useState<"female" | "male">("female");
   const [selectedVoice, setSelectedVoice] = useState("Aria (Warm & Cheerful)");
   const [speakingPace, setSpeakingPace] = useState<"gentle" | "natural">("gentle");
-  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/residents/${residentId}`)
@@ -176,18 +186,53 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
 
   const availableVoices = VOICE_OPTIONS.filter((v) => v.gender === voiceGender);
 
-  const playVoicePreview = (previewText: string) => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(previewText);
-      utterance.rate = speakingPace === "gentle" ? 0.85 : 0.98;
-      utterance.pitch = voiceGender === "female" ? 1.15 : 0.9;
-      utterance.onstart = () => setIsPlayingPreview(true);
-      utterance.onend = () => setIsPlayingPreview(false);
-      utterance.onerror = () => setIsPlayingPreview(false);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert(`Voice Sample: "${previewText}"`);
+  const playVoicePreview = (voiceId: string) => {
+    if (typeof window === "undefined") return;
+
+    // If already playing this voice, stop it
+    if (playingVoiceId === voiceId) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setPlayingVoiceId(null);
+      return;
+    }
+
+    // Stop any previously playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    try {
+      const audio = new Audio(`/voices/${voiceId}.mp3`);
+      audio.playbackRate = speakingPace === "gentle" ? 0.92 : 1.0;
+      audioRef.current = audio;
+      setPlayingVoiceId(voiceId);
+
+      audio.onended = () => {
+        setPlayingVoiceId(null);
+      };
+
+      audio.onpause = () => {
+        if (playingVoiceId === voiceId) {
+          setPlayingVoiceId(null);
+        }
+      };
+
+      audio.onerror = (e) => {
+        console.error(`Error playing ElevenLabs voice /voices/${voiceId}.mp3:`, e);
+        setPlayingVoiceId(null);
+      };
+
+      audio.play().catch((err) => {
+        console.warn("Audio play failed or blocked by autoplay policy:", err);
+        setPlayingVoiceId(null);
+      });
+    } catch (err) {
+      console.error("Audio error:", err);
+      setPlayingVoiceId(null);
     }
   };
 
@@ -383,12 +428,19 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
 
               {/* Voice Personas Grid */}
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-gray-700">
-                  Select Tone Persona ({availableVoices.length} Available):
-                </label>
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <label className="block text-xs font-bold text-gray-700">
+                    Select Tone Persona ({availableVoices.length} Available):
+                  </label>
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-400 px-2 py-0.5 rounded flex items-center gap-1 shadow-xs">
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    Real ElevenLabs Multilingual v2
+                  </span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1">
                   {availableVoices.map((v) => {
                     const isSelected = selectedVoice === v.name;
+                    const isThisPlaying = playingVoiceId === v.id;
                     return (
                       <div
                         key={v.id}
@@ -406,22 +458,41 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
                             </span>
                             {isSelected && <Check className="w-4 h-4 text-black stroke-[3]" />}
                           </div>
-                          <span className="text-[10px] font-bold bg-white px-1.5 py-0.5 border border-black inline-block mt-1">
-                            {v.accent}
-                          </span>
+                          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                            <span className="text-[10px] font-bold bg-white px-1.5 py-0.5 border border-black inline-block">
+                              {v.accent}
+                            </span>
+                            <span className="text-[9px] font-extrabold uppercase bg-amber-100 text-amber-900 px-1.5 py-0.5 border border-amber-300 rounded inline-block">
+                              ElevenLabs
+                            </span>
+                          </div>
                           <p className="text-xs text-gray-700 mt-1.5 line-clamp-2">{v.description}</p>
                         </div>
 
                         <button
                           type="button"
+                          id={`sample-btn-${v.id}`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            playVoicePreview(v.previewText);
+                            playVoicePreview(v.id);
                           }}
-                          className="btn-white text-[10px] py-1 px-2.5 flex items-center justify-center gap-1 mt-2"
+                          className={`text-[11px] font-bold py-1.5 px-3 flex items-center justify-center gap-1.5 mt-2 transition-all border-2 border-black ${
+                            isThisPlaying
+                              ? "bg-black text-white shadow-brutal-sm scale-[1.02]"
+                              : "btn-white text-[10px] py-1 px-2.5"
+                          }`}
                         >
-                          <Volume2 className="w-3 h-3 text-calmie-pink" />
-                          <span>{isPlayingPreview ? "Playing..." : "Hear Sample"}</span>
+                          {isThisPlaying ? (
+                            <>
+                              <VolumeX className="w-3.5 h-3.5 text-calmie-pink animate-pulse" />
+                              <span className="text-calmie-yellow font-heading font-black">Playing ElevenLabs (Click to Stop)</span>
+                            </>
+                          ) : (
+                            <>
+                              <Volume2 className="w-3 h-3 text-calmie-pink" />
+                              <span>Hear Sample</span>
+                            </>
+                          )}
                         </button>
                       </div>
                     );
@@ -437,7 +508,10 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setSpeakingPace("gentle")}
+                    onClick={() => {
+                      setSpeakingPace("gentle");
+                      if (audioRef.current) audioRef.current.playbackRate = 0.92;
+                    }}
                     className={`p-2.5 border-2 border-black text-xs font-bold text-left transition-all ${
                       speakingPace === "gentle"
                         ? "bg-emerald-100 border-emerald-900 shadow-brutal-sm"
@@ -448,7 +522,10 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
                   </button>
                   <button
                     type="button"
-                    onClick={() => setSpeakingPace("natural")}
+                    onClick={() => {
+                      setSpeakingPace("natural");
+                      if (audioRef.current) audioRef.current.playbackRate = 1.0;
+                    }}
                     className={`p-2.5 border-2 border-black text-xs font-bold text-left transition-all ${
                       speakingPace === "natural"
                         ? "bg-emerald-100 border-emerald-900 shadow-brutal-sm"
