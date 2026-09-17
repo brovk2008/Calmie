@@ -67,6 +67,14 @@ async function getResident(id: string) {
   return mocks[id] || mocks["95c6eaba-fda4-44c0-8d8e-d13d9211808e"];
 }
 
+export function generateStaticParams() {
+  return [
+    { id: "95c6eaba-fda4-44c0-8d8e-d13d9211808e" },
+    { id: "d9cde304-cad5-4d9c-ab22-2a169e3846d2" },
+    { id: "f1e8c218-bf30-44ed-84d4-6a129b12d99d" },
+  ];
+}
+
 export default async function ResidentDetailPage({ params }: { params: { id: string } }) {
   const resident = await getResident(params.id);
   if (!resident) notFound();

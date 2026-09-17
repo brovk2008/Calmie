@@ -16,6 +16,10 @@
       "dest": "api/index.py"
     },
     {
+      "src": "/_next/(.*)",
+      "dest": "frontend/_next/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "frontend/$1"
     }
