@@ -24,88 +24,88 @@ interface Resident {
 }
 
 const VOICE_OPTIONS = [
-  // Female Voices (Creator Library)
+  // Female Voices (Super-Human Native Indian & Multilingual)
   {
     id: "aria",
-    name: "Aria (Warm & Cheerful)",
+    name: "Anjura (Warm Granddaughter)",
     gender: "female",
-    description: "Affectionate, bright, like a caring granddaughter sharing a smile.",
-    accent: "Hindi/Indian English inflection",
-    previewText: "Namaste Dadaji! Main Calmie hoon. Aaj dhoop mein kaisa lag raha hai?"
+    description: "Expressive, bright, loving granddaughter tone with joyful conversational smiles.",
+    accent: "Native Hindi / Indian English",
+    previewText: "Arey Namaste Dadaji!... Main Calmie bol rahi hoon... Aaj Shanti Niwas mein dhoop badi suhani hai na? Subah ki chai pee li aapne?"
   },
   {
     id: "rachel",
-    name: "Rachel (Soft & Soothing)",
+    name: "Ria (Soft & Soothing)",
     gender: "female",
-    description: "Gentle, peaceful, patient companion tone with ultra-soft cadence.",
-    accent: "Calming, low-stress rhythm",
-    previewText: "Namaste ji, main Calmie. Bilkul aaram se baat karenge, koi jaldi nahi hai."
+    description: "Ultra-soft, meditative companion rhythm that melts anxiety and brings deep peace.",
+    accent: "Gentle, calming Indian cadence",
+    previewText: "Namaste ji... Bilkul sukoon se baithiye... Koi jaldi nahi hai, hum aaram se baatein karenge."
   },
   {
     id: "sarah",
-    name: "Sarah (Gentle & Reassuring)",
+    name: "Rashi (Reassuring Companion)",
     gender: "female",
-    description: "Mature, comforting, empathetic nurse and care companion.",
-    accent: "Reassuring, soft tone",
-    previewText: "Hello ji! Aapki tabiyat kaisi hai aaj? Subah ki chai pi li aapne?"
+    description: "Warm, comforting care companion listening attentively to health and routine.",
+    accent: "Empathetic, caring nurse tone",
+    previewText: "Hello ji!... Aapki tabiyat kaisi hai aaj? Dawaai waqt par le li na aapne? Main hamesha aapke saath hoon."
   },
   {
     id: "priya",
     name: "Priya (Traditional Respectful)",
     gender: "female",
-    description: "Polite, humble, traditional granddaughter respect register.",
-    accent: "Sweet Hindi honorifics",
-    previewText: "Pranam Naniji! Main aapse milne phone kar rahi hoon. Radhe Radhe!"
+    description: "Polite, humble, traditional granddaughter respect register with devotional warmth.",
+    accent: "Sweet Hindi honorifics register",
+    previewText: "Pranam Naniji!... Radhe Radhe! Main aapse milne ke liye phone kar rahi hoon... Aapse baat karke man khush ho gaya!"
   },
   {
     id: "lily",
-    name: "Lily (Velvety & Peaceful)",
+    name: "Saanu (Velvety & Peaceful)",
     gender: "female",
-    description: "Velvety, calm, meditative rhythm that reduces anxiety.",
-    accent: "Peaceful cadence",
-    previewText: "Namaste! Bilkul shaant hokar baat karte hain. Aaj kya socha aapne?"
+    description: "Gentle, tranquil rhythm that creates emotional security and eases loneliness.",
+    accent: "Velvety, peaceful rhythm",
+    previewText: "Namaste!... Bilkul shaant hokar baithiye... Aaj kya socha aapne? Koi purani meethi si yaad sunaiye na."
   },
 
-  // Male Voices (Creator Library)
+  // Male Voices (Super-Human Native Indian & Multilingual)
   {
     id: "brian",
-    name: "Brian (Respectful & Grounded)",
+    name: "Rith (Respectful Grandson)",
     gender: "male",
-    description: "Warm, respectful, reassuring grandson or junior officer tone.",
-    accent: "Clear, courteous, respectful",
-    previewText: "Namaste Colonel Sahab! Kahiye, aaj ka din kaisa chal raha hai?"
+    description: "Warm, respectful, reassuring grandson tone — attentive, courteous, and polite.",
+    accent: "Clear, courteous Indian grandson",
+    previewText: "Arey Namaste Colonel Sahab!... Kahiye, aaj ka din kaisa chal raha hai? Radio par purane geet sune aapne?"
   },
   {
     id: "george",
-    name: "George (Calm Storyteller)",
+    name: "AB (Calm Storyteller)",
     gender: "male",
-    description: "Dignified, mature, nostalgic tone — perfect for reminiscing.",
-    accent: "Deep, soothing resonance",
-    previewText: "Namaste Ramesh ji! Radio par cricket commentary sunne ka waqt ho gaya kya?"
+    description: "Dignified, mature, nostalgic Indian narrator — perfect for reminiscing about old songs & memories.",
+    accent: "Deep, nostalgic Indian resonance",
+    previewText: "Namaste Ramesh ji!... Radio par 1983 cricket commentary sunne ka waqt ho gaya kya? Mujhe wo kahani sunaiye na!"
   },
   {
     id: "adam",
-    name: "Adam (Warm Grandson)",
+    name: "Ashish (Warm Grandson)",
     gender: "male",
-    description: "Energetic yet gentle, polite, attentive listener.",
-    accent: "Conversational, cheerful",
-    previewText: "Namaste Dadaji! Vikram bhaiya ne aapko yaad kiya tha, kaise hain aap?"
+    description: "Energetic yet gentle, polite, attentive listener who laughs easily and brings joy.",
+    accent: "Conversational, cheerful Indian tone",
+    previewText: "Namaste Dadaji!... Vikram ne aapko bahut yaad kiya tha... Kahiye, aaj subah balcony mein baithe the aap?"
   },
   {
     id: "daniel",
-    name: "Daniel (Deep & Reassuring)",
+    name: "Pranab (Deep & Reassuring)",
     gender: "male",
-    description: "Deep, fatherly, grounded presence that instills security.",
-    accent: "Deep soothing baritone",
-    previewText: "Namaste ji. Aap aaram se baithiye, hum aapse dher saari baatein karenge."
+    description: "Deep, fatherly, grounded presence that instills security and calm.",
+    accent: "Deep soothing fatherly presence",
+    previewText: "Namaste ji... Aap aaram se baithiye... Hum aapse dher saari baatein karenge, koi chinta mat kijiye."
   },
   {
     id: "kabir",
-    name: "Kabir (Polite & Attentive)",
+    name: "Arjun (Attentive & Polite)",
     gender: "male",
-    description: "Humble Indian English and Hindi mix, deeply respectful.",
+    description: "Humble Indian English and Hindi mix, deeply respectful and curious listener.",
     accent: "Courteous Indian cadence",
-    previewText: "Pranam Uncle ji! Aapka anubhav sunne ke liye main hamesha utsuk rehta hoon."
+    previewText: "Pranam Uncle ji!... Aapka anubhav aur kisse sunne ke liye main hamesha utsuk rehta hoon. Kahiye kaise hain aap?"
   }
 ];
 
@@ -147,7 +147,7 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
 
   // Voice Customization states
   const [voiceGender, setVoiceGender] = useState<"female" | "male">("female");
-  const [selectedVoice, setSelectedVoice] = useState("Aria (Warm & Cheerful)");
+  const [selectedVoice, setSelectedVoice] = useState("Anjura (Warm Granddaughter)");
   const [speakingPace, setSpeakingPace] = useState<"gentle" | "natural">("gentle");
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -400,7 +400,7 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
                   type="button"
                   onClick={() => {
                     setVoiceGender("female");
-                    setSelectedVoice("Aria (Warm & Cheerful)");
+                    setSelectedVoice("Anjura (Warm Granddaughter)");
                   }}
                   className={`p-3 border-2 border-black text-xs font-bold text-center transition-all ${
                     voiceGender === "female"
@@ -414,7 +414,7 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
                   type="button"
                   onClick={() => {
                     setVoiceGender("male");
-                    setSelectedVoice("Brian (Respectful & Grounded)");
+                    setSelectedVoice("Rith (Respectful Grandson)");
                   }}
                   className={`p-3 border-2 border-black text-xs font-bold text-center transition-all ${
                     voiceGender === "male"

@@ -10,25 +10,34 @@ logger = logging.getLogger("calmie.elevenlabs")
 
 ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1"
 
-# Popular ElevenLabs Creator Voices mapped to IDs
+# Hyper-Realistic Native Indian & Multilingual Conversational Voice IDs
 ELEVENLABS_VOICE_IDS = {
     # Female Voices
-    "aria": "9BWtsMINqrJLrRacOk9x",
-    "rachel": "21m00Tcm4TlvDq8ikWAM",
-    "sarah": "EXAVITQu4vr4xnSDxMaL",
-    "priya": "ThT5KcBeYPX3keUQqHPh",
-    "lily": "pFZP5JQG7iQjIQuC4Bku",
+    "aria": "IzQxb6JkxyJg77HNbm6b",      # Anjura - Warm, Expressive & Clear Granddaughter
+    "anjura": "IzQxb6JkxyJg77HNbm6b",
+    "rachel": "M6udCbeLpbqc4ZtMMDGJ",    # Ria - Soft & Soothing Indian Narrator
+    "ria": "M6udCbeLpbqc4ZtMMDGJ",
+    "sarah": "gM97WcXnv5iYPHhVZJN8",     # Rashi - Gentle & Reassuring Companion
+    "rashi": "gM97WcXnv5iYPHhVZJN8",
+    "priya": "ThT5KcBeYPX3keUQqHPh",     # Priya - Traditional Respectful
+    "lily": "yNLymtQiql9Dxxobo0Cl",      # Saanu - Velvety, Peaceful & Calm Care
+    "saanu": "yNLymtQiql9Dxxobo0Cl",
     # Male Voices
-    "brian": "nPczCjzI2devNBz1zQrb",
-    "george": "JBFqnCBsd6RMkjVDRZzb",
-    "adam": "pNInz6obpgDQGcFmaJgB",
-    "daniel": "onwK4e9ZLuTAKqWW03F9",
-    "kabir": "VR6AewLTigWG4xSOukaG",
+    "brian": "qIo8SDYwOdVhx4cn8o6U",     # Rith - Respectful & Grounded Grandson
+    "rith": "qIo8SDYwOdVhx4cn8o6U",
+    "george": "JSZ6mrlwqYAjKBo9OVaS",    # AB - Warm, Dignified Storyteller
+    "ab": "JSZ6mrlwqYAjKBo9OVaS",
+    "adam": "P7S04a3RSZ9FmMIw9JVS",      # Ashish - Warm, Polite Grandson
+    "ashish": "P7S04a3RSZ9FmMIw9JVS",
+    "daniel": "niLTODfB1j2nXIbp3M14",    # Pranab - Deep & Reassuring Fatherly Presence
+    "pranab": "niLTODfB1j2nXIbp3M14",
+    "kabir": "dC5hdN77LtL8UVTQj3gZ",     # Arjun - Attentive, Courteous Listener
+    "arjun": "dC5hdN77LtL8UVTQj3gZ",
 }
 
 class ElevenLabsService:
     def __init__(self):
-        self.api_key = settings.ELEVENLABS_API_KEY
+        self.api_key = getattr(settings, "ELEVENLABS_API_KEY", "") or os.getenv("ELEVENLABS_API_KEY", "")
 
     def is_configured(self) -> bool:
         return bool(self.api_key and len(self.api_key.strip()) > 5)
@@ -37,12 +46,13 @@ class ElevenLabsService:
         self,
         text: str,
         voice_id: str = "aria",
-        stability: float = 0.45,
-        similarity_boost: float = 0.80,
-        style: float = 0.35,
+        stability: float = 0.36,
+        similarity_boost: float = 0.84,
+        style: float = 0.30,
     ) -> Optional[bytes]:
         """
-        Generates ultra-calming neural TTS audio bytes from ElevenLabs API.
+        Generates ultra-human, conversational neural TTS audio bytes from ElevenLabs API.
+        Uses lower stability (0.36) for expressive emotional range and vocal inflections.
         """
         if not self.is_configured():
             logger.info("ElevenLabs API Key not configured; skipping neural TTS call.")

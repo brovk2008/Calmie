@@ -80,6 +80,8 @@ def build_first_sentence(resident: Dict[str, Any], booker_name: Optional[str] = 
     else:
         salutation = f"{first_name} ji"
 
+    self_verb = "bol raha hoon" if voice_gender == "male" else "bol rahi hoon"
+
     if booker_name:
-        return f"Namaste {salutation}! Main Calmie bol rahi hoon. {booker_name} ne aapke liye yeh call book kiya tha. Kaise hain aap aaj?"
-    return f"Namaste {salutation}! Main Calmie bol rahi hoon. Shanti Niwas mein aapse baat karne ke liye phone kiya. Kahiye, aaj ka din kaisa chal raha hai?"
+        return f"Arey Namaste {salutation}!... Main Calmie {self_verb}... {booker_name} ne aapko dher saara pyaar bheja hai aur aapke liye yeh phone karwaya hai. Kaise hain aap aaj?"
+    return f"Arey Namaste {salutation}!... Main Calmie {self_verb}... Bas aapse do baatein karne ke liye phone milaya. Kahiye, aaj ka din kaisa chal raha hai aapka?"

@@ -44,7 +44,7 @@ except Exception:
             TWILIO_ACCOUNT_SID = ""
             TWILIO_PHONE_NUMBER = ""
             ANTHROPIC_API_KEY = ""
-            ELEVENLABS_API_KEY = "sk_db375de384ece60f214056dd93a2532e30d0831e7b5d0ada"
+            ELEVENLABS_API_KEY = ""
         settings = DummySettings()
 
 # 3. Load routers with graceful isolation

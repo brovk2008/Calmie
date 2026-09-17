@@ -10,23 +10,21 @@ load_dotenv(dotenv_path=env_path)
 class Settings:
     # App
     APP_NAME: str = "Calmie API"
-    ENV: str = os.getenv("ENV", "development")
+    ENV: str = os.getenv("ENV", "production")
     raw_port = os.getenv("PORT", "")
     PORT: int = int(raw_port) if raw_port and raw_port.isdigit() else 8000
 
-    # Auto-detect production BASE_URL from Vercel's injected VERCEL_URL env var
-    # VERCEL_URL is automatically set on all deployments (no https:// prefix)
     @property
     def BASE_URL(self) -> str:
-        custom_url = os.getenv("BASE_URL", "").strip().rstrip("/")
+        custom_url = os.getenv("BASE_URL", "").rstrip("/")
         if custom_url and not custom_url.startswith("http://localhost"):
             return custom_url
-        vercel_url = os.getenv("VERCEL_URL", "").strip()
+        vercel_url = os.getenv("VERCEL_URL", "")
         if vercel_url:
             return f"https://{vercel_url}"
         if custom_url:
             return custom_url
-        return "http://localhost:8000"
+        return "https://calmie-lol.vercel.app"
 
     # Supabase
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://ltqiosnhrxdxxltbkxkm.supabase.co")
@@ -38,12 +36,12 @@ class Settings:
     TWILIO_AUTH_TOKEN: str = os.getenv("TWILIO_AUTH_TOKEN", "")
     TWILIO_API_KEY_SID: str = os.getenv("TWILIO_API_KEY_SID", "")
     TWILIO_API_SECRET: str = os.getenv("TWILIO_API_SECRET", "")
-    TWILIO_PHONE_NUMBER: str = os.getenv("TWILIO_PHONE_NUMBER", "")
-    TWILIO_VERIFIED_CALLER_ID: str = os.getenv("TWILIO_VERIFIED_CALLER_ID", "")
+    TWILIO_PHONE_NUMBER: str = os.getenv("TWILIO_PHONE_NUMBER", "+19893943193")
+    TWILIO_VERIFIED_CALLER_ID: str = os.getenv("TWILIO_VERIFIED_CALLER_ID", "+919821400274")
 
     # ElevenLabs (Creator Tier Voice)
-    ELEVENLABS_API_KEY: str = os.getenv("ELEVENLABS_API_KEY", "sk_db375de384ece60f214056dd93a2532e30d0831e7b5d0ada")
-    ELEVENLABS_VOICE_ID: str = os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")
+    ELEVENLABS_API_KEY: str = os.getenv("ELEVENLABS_API_KEY", "")
+    ELEVENLABS_VOICE_ID: str = os.getenv("ELEVENLABS_VOICE_ID", "IzQxb6JkxyJg77HNbm6b")
     ELEVENLABS_AGENT_ID: str = os.getenv("ELEVENLABS_AGENT_ID", "")
 
     # Anthropic / Claude Analysis
