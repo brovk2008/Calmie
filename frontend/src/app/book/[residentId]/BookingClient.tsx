@@ -206,7 +206,7 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
     }
 
     try {
-      const audio = new Audio(`/voices/${voiceId}.mp3`);
+      const audio = new Audio(`/voices/${voiceId}_v2.mp3`);
       audio.playbackRate = speakingPace === "gentle" ? 0.92 : 1.0;
       audioRef.current = audio;
       setPlayingVoiceId(voiceId);
