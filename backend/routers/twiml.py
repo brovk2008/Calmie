@@ -15,10 +15,22 @@ import httpx
 import logging
 import httpx
 import urllib.parse
+import re
 from typing import Optional
 
 logger = logging.getLogger("calmie.twiml")
 router = APIRouter(prefix="/api/twiml", tags=["TwiML"])
+
+def clean_speech_text(text: str) -> str:
+    """Removes markdown asterisks, hashtags, and unicode emojis that could distort TTS."""
+    if not text:
+        return ""
+    # Strip markdown symbols
+    t = re.sub(r'[*_#`~]', '', text)
+    # Strip emoji ranges
+    t = re.sub(r'[\U00010000-\U0010ffff]', '', t)
+    t = re.sub(r'[\u2600-\u27BF]', '', t)
+    return re.sub(r'\s+', ' ', t).strip()
 
 # In-memory audio cache for zero-latency telephony playback
 _tts_cache = {}
@@ -169,6 +181,7 @@ async def twiml_gather(
         else:
             reply = f"Wah {name} ji!... Aapki baat sun kar dil khush ho gaya... Mujhe aapse baat karke bilkul apne parivaar jaisa lagta hai."
 
+    reply = clean_speech_text(reply)
     next_turn = turn + 1
     reply_audio = render_twiml_speech(reply, voice_gender=gender, voice_id=v_id)
     gather_prompt_audio = render_twiml_speech("Bataiye na... main sun rahi hoon...", voice_gender=gender, voice_id=v_id)
