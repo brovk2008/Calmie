@@ -58,6 +58,13 @@ export default function Navbar() {
             Care Homes
           </Link>
           <Link
+            href="/vakh"
+            className="text-calmie-dark hover:text-calmie-pink transition-colors px-2 py-1 flex items-center gap-1.5"
+          >
+            <span className="w-2 h-2 rounded-full bg-calmie-pink animate-pulse"></span>
+            <span>Vakh Booking</span>
+          </Link>
+          <Link
             href="/dashboard"
             className="flex items-center gap-1.5 text-calmie-dark hover:text-calmie-pink transition-colors px-2 py-1"
           >
@@ -69,10 +76,10 @@ export default function Navbar() {
         {/* Action Buttons */}
         <div className="flex items-center gap-3">
           <Link
-            href="/dashboard"
-            className="hidden sm:inline-flex btn-white text-xs py-2 px-3.5"
+            href="/vakh"
+            className="hidden sm:inline-flex btn-yellow text-xs py-2 px-3 font-bold"
           >
-            Staff Portal
+            💬 Vakh Hub
           </Link>
           <Link
             href="/residents"

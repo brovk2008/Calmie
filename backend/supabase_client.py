@@ -28,6 +28,7 @@ DEFAULT_RESIDENTS = [
         "id": "95c6eaba-fda4-44c0-8d8e-d13d9211808e",
         "home_id": "7395f58b-3ec9-4d30-a72a-7c3ec754f416",
         "name": "Ramesh Tiwari",
+        "code": "CLM-RAMESH",
         "age": 79,
         "phone": "9821400274",
         "room_number": "104",
@@ -47,6 +48,7 @@ DEFAULT_RESIDENTS = [
         "id": "d9cde304-cad5-4d9c-ab22-2a169e3846d2",
         "home_id": "7395f58b-3ec9-4d30-a72a-7c3ec754f416",
         "name": "Kamla Devi",
+        "code": "CLM-KAMLA",
         "age": 74,
         "phone": "9821400274",
         "room_number": "108",
@@ -66,6 +68,7 @@ DEFAULT_RESIDENTS = [
         "id": "f1e8c218-bf30-44ed-84d4-6a129b12d99d",
         "home_id": "7395f58b-3ec9-4d30-a72a-7c3ec754f416",
         "name": "Col. (Retd.) Harbhajan Singh",
+        "code": "CLM-HARBHAJAN",
         "age": 82,
         "phone": "9821400274",
         "room_number": "201",
@@ -83,6 +86,16 @@ DEFAULT_RESIDENTS = [
     }
 ]
 
+def _enrich_resident_code(r: Dict[str, Any]) -> Dict[str, Any]:
+    if not r.get("code"):
+        name = r.get("name", "").strip()
+        first_name = name.split()[0].upper()
+        if "HARBHAJAN" in name.upper():
+            first_name = "HARBHAJAN"
+        first_clean = "".join(c for c in first_name if c.isalnum()) or "SENIOR"
+        r["code"] = f"CLM-{first_clean}"
+    return r
+
 class SupabaseService:
     def __init__(self):
         self.url = settings.SUPABASE_URL
@@ -96,12 +109,12 @@ class SupabaseService:
         # In-memory storage for bookings and calls created during demo
         self.local_bookings: List[Dict[str, Any]] = []
         self.local_calls: List[Dict[str, Any]] = []
-        self.local_residents: List[Dict[str, Any]] = list(DEFAULT_RESIDENTS)
+        self.local_residents: List[Dict[str, Any]] = [_enrich_resident_code(dict(r)) for r in DEFAULT_RESIDENTS]
 
     async def get_homes(self) -> List[Dict[str, Any]]:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.get(f"{self.url}/rest/v1/homes?select=*", headers=self.headers)
+                res = await client.get(f"{self.url}/rest/v1/care_homes?select=*&approved=eq.true", headers=self.headers)
                 if res.status_code == 200:
                     data = res.json()
                     if data:
@@ -121,10 +134,10 @@ class SupabaseService:
                     data = res.json()
                     if data:
                         # merge any local created ones
-                        return data
+                        return [_enrich_resident_code(r) for r in data]
         except Exception as e:
             logger.warning(f"Supabase get_residents failed, using fallback: {e}")
-        return self.local_residents
+        return [_enrich_resident_code(r) for r in self.local_residents]
 
     async def get_resident_by_id(self, resident_id: str) -> Optional[Dict[str, Any]]:
         try:
@@ -134,13 +147,31 @@ class SupabaseService:
                 if res.status_code == 200:
                     data = res.json()
                     if data:
-                        return data[0]
+                        return _enrich_resident_code(data[0])
         except Exception as e:
             logger.warning(f"Supabase get_resident_by_id failed: {e}")
         
         # Check local fallback
         for r in self.local_residents:
             if str(r.get("id")) == str(resident_id):
+                return _enrich_resident_code(r)
+        return None
+
+    async def get_resident_by_code(self, code: str) -> Optional[Dict[str, Any]]:
+        if not code:
+            return None
+        clean_target = code.strip().upper().replace(" ", "").replace("-", "").replace("_", "")
+        residents = await self.get_residents()
+        for r in residents:
+            r_code = (r.get("code") or "").strip().upper().replace("-", "").replace("_", "")
+            if r_code and r_code == clean_target:
+                return r
+            # Check room number
+            if str(r.get("room_number", "")) == clean_target:
+                return r
+            # Check first name
+            first = r.get("name", "").upper().split()[0]
+            if first in clean_target or clean_target in first:
                 return r
         return None
 

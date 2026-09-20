@@ -4,12 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Phone, Calendar, Clock, Volume2, VolumeX, BookOpen, Heart, Check, Sparkles } from "lucide-react";
+import { ArrowLeft, Phone, Calendar, Clock, Volume2, VolumeX, BookOpen, Heart, Check, Sparkles, Copy, MessageSquare } from "lucide-react";
 import { API_BASE_URL } from "@/lib/api";
+import VakhBookingModal from "@/components/VakhBookingModal";
 
 interface Resident {
   id: string;
   name: string;
+  code?: string;
   age: number;
   room_number: string;
   photo_url: string;
@@ -150,7 +152,16 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
   const [selectedVoice, setSelectedVoice] = useState("Anjura (Warm Granddaughter)");
   const [speakingPace, setSpeakingPace] = useState<"gentle" | "natural">("gentle");
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [vakhModalOpen, setVakhModalOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handleCopyCode = () => {
+    const codeToCopy = resident?.code || "CLM-RAMESH";
+    navigator.clipboard.writeText(codeToCopy);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
 
   useEffect(() => {
     return () => {
@@ -164,12 +175,16 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/residents/${residentId}`)
       .then((res) => res.json())
-      .then((data) => setResident(data))
+      .then((data) => setResident({
+        ...data,
+        code: data.code || `CLM-${data.name?.split(" ")[0].toUpperCase()}`
+      }))
       .catch((err) => {
         console.warn("Using fallback resident:", err);
         setResident({
           id: residentId,
           name: "Ramesh Tiwari",
+          code: "CLM-RAMESH",
           age: 79,
           room_number: "104",
           photo_url: "/residents/ramesh.jpg",
@@ -338,6 +353,33 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
               <p className="text-xs text-gray-600 font-medium">{resident?.hometown}</p>
             </div>
 
+            {/* Senior Code Badge */}
+            <div className="bg-[#fbf9f4] border-2 border-black p-2.5 flex items-center justify-between shadow-brutal-sm">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-bold text-gray-500 uppercase">Senior Code:</span>
+                <span className="font-mono font-black text-xs text-calmie-dark bg-calmie-yellow px-1.5 py-0.5 border border-black">
+                  {resident?.code || "CLM-RAMESH"}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyCode}
+                className="text-[11px] font-bold px-2 py-0.5 border border-black bg-white hover:bg-calmie-yellow transition-colors flex items-center gap-1"
+              >
+                {copiedCode ? (
+                  <>
+                    <Check className="w-3 h-3 text-emerald-600" />
+                    <span className="text-emerald-700">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             {/* Life Story */}
             <div className="space-y-2 border-t-2 border-black/10 pt-3">
               <span className="text-xs font-heading font-black uppercase text-calmie-dark flex items-center gap-1.5">
@@ -376,6 +418,25 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
 
             <div className="bg-calmie-yellow/50 border border-black p-3 text-[11px] font-medium leading-relaxed">
               💡 Calmie is briefed with this entire dossier before dialing.
+            </div>
+
+            {/* Vakh Alternative Booking Callout */}
+            <div className="bg-calmie-cream border-2 border-black p-4 shadow-brutal-sm space-y-2">
+              <span className="badge-brutal bg-black text-white text-[10px]">VAKH INTEGRATION</span>
+              <p className="font-heading font-black text-xs text-calmie-dark">
+                Prefer to book through Vakh?
+              </p>
+              <p className="text-[11px] text-gray-700 leading-normal">
+                You can reserve a call for {resident?.name?.split(" ")[0]} by replying to our Vakh post or filling out the Vakh Form using Senior Code <strong className="font-mono">{resident?.code || "CLM-RAMESH"}</strong>.
+              </p>
+              <button
+                type="button"
+                onClick={() => setVakhModalOpen(true)}
+                className="btn-white text-xs py-2 px-3 w-full flex items-center justify-center gap-1.5 font-bold shadow-brutal-sm"
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-calmie-pink" />
+                <span>Open Vakh Booker</span>
+              </button>
             </div>
           </div>
         </div>
@@ -695,6 +756,14 @@ export default function BookingClient({ residentId: initialResidentId }: { resid
           </form>
         </div>
       </div>
+
+      {/* Vakh Modal */}
+      <VakhBookingModal
+        isOpen={vakhModalOpen}
+        onClose={() => setVakhModalOpen(false)}
+        initialSeniorCode={resident?.code}
+        initialSeniorId={resident?.id}
+      />
     </div>
   );
 }

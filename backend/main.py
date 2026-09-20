@@ -51,18 +51,28 @@ except Exception:
 import_errors = {}
 
 def safe_include(module_path: str, attr_name: str = "router"):
-    try:
-        mod = __import__(module_path, fromlist=[attr_name])
-        router = getattr(mod, attr_name)
-        app.include_router(router)
-    except Exception:
-        import_errors[module_path] = traceback.format_exc()
+    mod = None
+    for candidate in [module_path, f"backend.{module_path}"]:
+        try:
+            mod = __import__(candidate, fromlist=[attr_name])
+            break
+        except Exception:
+            continue
+    if mod and hasattr(mod, attr_name):
+        try:
+            router = getattr(mod, attr_name)
+            app.include_router(router)
+        except Exception:
+            import_errors[module_path] = traceback.format_exc()
+    else:
+        import_errors[module_path] = f"Could not import {module_path} from any path candidate."
 
 safe_include("routers.homes")
 safe_include("routers.residents")
 safe_include("routers.bookings")
 safe_include("routers.calls")
 safe_include("routers.twiml")
+safe_include("routers.vakh")
 
 # 4. Optional background scheduler for local dev only
 IS_SERVERLESS = bool(

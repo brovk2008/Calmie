@@ -23,6 +23,7 @@ class ResidentCreate(BaseModel):
     preferred_lang: Optional[str] = "Hindi with English mix"
     favorite_topics: Optional[str] = ""
     avoid_topics: Optional[str] = ""
+    code: Optional[str] = None
 
 @router.get("", response_model=List[Dict[str, Any]])
 async def list_residents(home_id: Optional[str] = Query(None)):
