@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Phone, ShieldAlert } from "lucide-react";
+import { Phone, ShieldAlert, ClipboardList } from "lucide-react";
 
 export default function Navbar() {
   return (
@@ -63,6 +63,13 @@ export default function Navbar() {
           >
             <span className="w-2 h-2 rounded-full bg-calmie-pink animate-pulse"></span>
             <span>Vakh Booking</span>
+          </Link>
+          <Link
+            href="/intake"
+            className="text-calmie-dark hover:text-calmie-pink transition-colors px-2 py-1 flex items-center gap-1.5"
+          >
+            <ClipboardList className="w-4 h-4 text-calmie-dark" />
+            <span>Add Residents</span>
           </Link>
           <Link
             href="/dashboard"

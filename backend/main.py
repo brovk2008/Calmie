@@ -73,6 +73,8 @@ safe_include("routers.bookings")
 safe_include("routers.calls")
 safe_include("routers.twiml")
 safe_include("routers.vakh")
+safe_include("routers.voice_cloning")
+safe_include("routers.data_intake")
 
 # 4. Optional background scheduler for local dev only
 IS_SERVERLESS = bool(
