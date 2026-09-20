@@ -4,9 +4,11 @@ from twilio.rest import Client
 try:
     from ..config import settings
     from ..prompt_builder import build_first_sentence, build_system_prompt
+    from ..routers.twiml import render_twiml_speech
 except (ImportError, ValueError):
     from config import settings
     from prompt_builder import build_first_sentence, build_system_prompt
+    from routers.twiml import render_twiml_speech
 
 logger = logging.getLogger("calmie.twilio")
 
@@ -21,11 +23,14 @@ class TwilioService:
         
         self.client: Optional[Client] = None
         try:
-            if self.api_key and self.api_secret:
+            if self.api_key and self.api_secret and self.account_sid:
                 self.client = Client(self.api_key, self.api_secret, self.account_sid)
+                logger.info("Twilio client initialized via API Key successfully.")
             elif self.account_sid and self.auth_token:
                 self.client = Client(self.account_sid, self.auth_token)
-            logger.info("Twilio client initialized successfully.")
+                logger.info("Twilio client initialized via Account SID & Auth Token successfully.")
+            else:
+                logger.warning("Twilio credentials not found in settings.")
         except Exception as e:
             logger.error(f"Failed to initialize Twilio client: {e}")
 
@@ -55,49 +60,51 @@ class TwilioService:
 
         booker_name = booking.get("booker_name") if booking else None
         voice_gender = (booking.get("voice_gender") if booking else "female") or "female"
-        selected_voice = (booking.get("selected_voice") if booking else "Aria") or "Aria"
-        speaking_pace = (booking.get("speaking_pace") if booking else "gentle") or "gentle"
+        selected_voice = (booking.get("selected_voice") if booking else "aria") or "aria"
 
-        # Voice selection based on gender
-        if voice_gender.lower() == "male" or any(m in selected_voice for m in ["Brian", "George", "Kabir", "Dev"]):
-            polly_voice = "Polly.Matthew"
-            polly_lang = "en-IN"
+        # Voice selection based on gender and persona
+        if voice_gender.lower() == "male" or any(m in selected_voice.lower() for m in ["brian", "george", "rith", "ab", "ashish", "pranab", "arjun"]):
             closing_phrase = "Aapki aawaz sun kar bahut achha laga. Main phir phone karunga. Apna khayal rakhiyega!"
         else:
-            polly_voice = "Polly.Aditi"
-            polly_lang = "hi-IN"
             closing_phrase = "Aapki aawaz sun kar bahut achha laga. Main phir phone karungi. Apna khayal rakhiyega!"
 
-        rate_val = "88%" if speaking_pace == "gentle" else "96%"
-        first_greeting = build_first_sentence(resident, booker_name)
+        v_id = selected_voice.lower() if selected_voice else ("rith" if voice_gender == "male" else "anjura")
+        first_greeting = build_first_sentence(resident, booker_name, voice_gender=voice_gender)
         
-        # Build interactive TwiML response with soft calming pacing
+        # Build interactive TwiML response with super-human ElevenLabs streaming
+        speech_first = render_twiml_speech(first_greeting, voice_gender=voice_gender, voice_id=v_id)
+        speech_question = render_twiml_speech(
+            "Bataiye, aaj ka din kaisa raha? Shanti Niwas mein sab theek chal raha hai?",
+            voice_gender=voice_gender,
+            voice_id=v_id
+        )
+        speech_closing = render_twiml_speech(
+            closing_phrase,
+            voice_gender=voice_gender,
+            voice_id=v_id
+        )
+
         twiml_script = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-    <Say voice="{polly_voice}" language="{polly_lang}">
-        <prosody rate="{rate_val}">{first_greeting}</prosody>
-    </Say>
+    {speech_first}
     <Pause length="1"/>
-    <Gather input="speech" timeout="6" speechTimeout="auto" action="{settings.BASE_URL}/api/twiml/gather?resident_id={resident.get('id')}&amp;call_id={call_id or ''}" method="POST">
-        <Say voice="{polly_voice}" language="{polly_lang}">
-            <prosody rate="{rate_val}">Bataiye, aaj ka din kaisa raha? Shanti Niwas mein sab theek chal raha hai?</prosody>
-        </Say>
+    <Gather input="speech" timeout="6" speechTimeout="auto" action="{settings.BASE_URL}/api/twiml/gather?resident_id={resident.get('id')}&amp;call_id={call_id or ''}&amp;gender={voice_gender}&amp;voice_id={v_id}" method="POST">
+        {speech_question}
     </Gather>
-    <Say voice="{polly_voice}" language="{polly_lang}">
-        <prosody rate="{rate_val}">{closing_phrase}</prosody>
-    </Say>
+    {speech_closing}
 </Response>"""
 
         if not self.client:
-            logger.warning("Twilio client not initialized, returning mock call response")
+            logger.error("Twilio client not initialized, cannot trigger live phone call")
             return {
-                "success": True,
-                "mock": True,
-                "call_sid": f"CA_MOCK_{call_id or '123'}",
+                "success": False,
+                "mock": False,
+                "error": "Twilio client not initialized. Check Twilio credentials.",
+                "call_sid": None,
                 "to": target_phone,
                 "from": self.from_phone,
-                "status": "queued",
-                "message": "Demo call initiated (Simulated mode)"
+                "status": "failed",
+                "message": "Twilio client not configured"
             }
 
         try:
@@ -127,8 +134,10 @@ class TwilioService:
                 "error": str(e),
                 "to": target_phone,
                 "from": self.from_phone,
-                "mock_fallback": True,
-                "call_sid": f"CA_FALLBACK_{call_id or 'err'}"
+                "mock": False,
+                "status": "failed",
+                "call_sid": None,
+                "message": f"Twilio dial error: {e}"
             }
 
 twilio_service = TwilioService()

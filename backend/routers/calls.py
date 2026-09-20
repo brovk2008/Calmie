@@ -52,7 +52,7 @@ async def trigger_outbound_call(booking_id: str):
         }
 
     call_id = str(uuid.uuid4())
-    to_phone = resident.get("phone", "9821400274")
+    to_phone = booking.get("booker_phone") or resident.get("phone") or "9821400274"
 
     # Initiate outbound call via Twilio
     twilio_resp = await twilio_service.initiate_outbound_call(
@@ -62,6 +62,7 @@ async def trigger_outbound_call(booking_id: str):
         call_id=call_id
     )
 
+    is_success = bool(twilio_resp.get("success"))
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
     call_record = {
         "id": call_id,
@@ -69,7 +70,7 @@ async def trigger_outbound_call(booking_id: str):
         "resident_id": resident_id,
         "twilio_call_sid": twilio_resp.get("call_sid"),
         "started_at": now_iso,
-        "status": "ringing" if twilio_resp.get("success") else "failed",
+        "status": "ringing" if is_success else "failed",
         "created_at": now_iso
     }
 
@@ -78,6 +79,8 @@ async def trigger_outbound_call(booking_id: str):
     saved_call["resident"] = resident
     saved_call["booking"] = booking
     saved_call["twilio_response"] = twilio_resp
+    if not is_success:
+        saved_call["error"] = twilio_resp.get("error", "Twilio call initiation failed")
 
     return saved_call
 

@@ -92,18 +92,26 @@ export default function PhoneDemoWidget() {
       });
 
       if (callRes.ok) {
+        const callData = await callRes.json();
+        if (callData.status === "failed" || callData.twilio_response?.success === false) {
+          setCallStatus("idle");
+          const errMsg = callData.error || callData.twilio_response?.error || "Twilio call could not be placed.";
+          alert(`Live Call Notice: ${errMsg}`);
+          return;
+        }
         setCallStatus("connected");
         setTimeout(() => {
           setCallStatus("completed");
         }, 12000);
       } else {
-        setCallStatus("connected");
-        setTimeout(() => setCallStatus("completed"), 8000);
+        const errJson = await callRes.json().catch(() => null);
+        setCallStatus("idle");
+        alert(errJson?.detail || "Server failed to initiate call");
       }
-    } catch (e) {
-      console.warn("Backend not reached, using instant client simulation", e);
-      setCallStatus("connected");
-      setTimeout(() => setCallStatus("completed"), 8000);
+    } catch (e: any) {
+      console.error("Live call error:", e);
+      setCallStatus("idle");
+      alert("Error triggering live call: " + (e?.message || "Network issue"));
     } finally {
       setLoading(false);
     }

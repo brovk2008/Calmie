@@ -47,7 +47,7 @@ export default function ConfirmClient({ bookingId: initialBookingId }: { booking
   }, [initialBookingId, searchParams]);
 
   const [booking, setBooking] = useState<Booking | null>(null);
-  const [callStatus, setCallStatus] = useState<"idle" | "ringing" | "connected" | "analyzing" | "completed">("idle");
+  const [callStatus, setCallStatus] = useState<"idle" | "ringing" | "connected" | "analyzing" | "completed" | "failed">("idle");
   const [callDetails, setCallDetails] = useState<any>(null);
   const [loadingCall, setLoadingCall] = useState(false);
 
@@ -87,9 +87,12 @@ export default function ConfirmClient({ bookingId: initialBookingId }: { booking
       });
   }, [bookingId, searchParams]);
 
+  const [callError, setCallError] = useState<string | null>(null);
+
   const handleTriggerLiveCall = async () => {
     setLoadingCall(true);
     setCallStatus("ringing");
+    setCallError(null);
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/calls/trigger/${bookingId}`, {
@@ -99,6 +102,14 @@ export default function ConfirmClient({ bookingId: initialBookingId }: { booking
       if (res.ok) {
         const callData = await res.json();
         setCallDetails(callData);
+
+        if (callData.status === "failed" || callData.twilio_response?.success === false) {
+          const errMsg = callData.error || callData.twilio_response?.error || "Twilio failed to place live call.";
+          setCallStatus("failed");
+          setCallError(errMsg);
+          return;
+        }
+
         setCallStatus("connected");
 
         // Wait a few seconds then trigger completion analysis
@@ -119,15 +130,16 @@ export default function ConfirmClient({ bookingId: initialBookingId }: { booking
           } else {
             setCallStatus("completed");
           }
-        }, 10000);
+        }, 12000);
       } else {
-        setCallStatus("connected");
-        setTimeout(() => setCallStatus("completed"), 8000);
+        const errJson = await res.json().catch(() => null);
+        setCallStatus("failed");
+        setCallError(errJson?.detail || "Server failed to initiate call");
       }
-    } catch (e) {
-      console.warn("Live call fallback simulation:", e);
-      setCallStatus("connected");
-      setTimeout(() => setCallStatus("completed"), 8000);
+    } catch (e: any) {
+      console.error("Live call error:", e);
+      setCallStatus("failed");
+      setCallError(e?.message || "Network error while triggering live call");
     } finally {
       setLoadingCall(false);
     }
@@ -193,12 +205,24 @@ export default function ConfirmClient({ bookingId: initialBookingId }: { booking
                 ? "Call in Progress..."
                 : callStatus === "analyzing"
                 ? "Analyzing Dialogue..."
+                : callStatus === "failed"
+                ? "Retry Live Outbound Call"
                 : callStatus === "completed"
                 ? "Trigger Call Again"
                 : "Trigger Live Outbound Call"}
             </span>
           </button>
         </div>
+
+        {callError && (
+          <div className="p-4 bg-red-100 border-2 border-black text-red-900 text-xs font-mono-brutal shadow-brutal-sm flex items-start gap-2">
+            <span className="text-base leading-none">⚠️</span>
+            <div>
+              <p className="font-bold uppercase">Live Call Status:</p>
+              <p className="mt-0.5">{callError}</p>
+            </div>
+          </div>
+        )}
 
         {/* Live Stepper */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
